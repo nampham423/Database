@@ -109,10 +109,23 @@
     </table>
     <script>
         function searchPatient() {
-            // Logic to search patient by phone or ID
-            // This would typically involve an AJAX call to your server-side script
-            alert('Search functionality not implemented yet.');
-        }
+        var ipId = document.getElementById('ipIdSearch').value;
+        var opId = document.getElementById('opIdSearch').value;
+        var phoneNumber = document.getElementById('phoneSearch').value;
+
+        var searchQuery = { ipId, opId, phoneNumber };
+
+        fetch('/search_patient', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(searchQuery)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Xử lý dữ liệu nhận về và hiển thị kết quả tìm kiếm
+        })
+        .catch(error => console.error('Error:', error));
+    }
     </script>
 </body>
 </html>

@@ -76,19 +76,29 @@ app.post('/search_doctor', async (req, res) => {
         }
     }
 });
-app.post('/get_patient_info', async (req, res) => {
+app.post('/search_patient', async (req, res) => {
+    let { ipId, opId, phoneNumber } = req.body;
     let connection;
+
     try {
         connection = await oracledb.getConnection(dbConfig);
-        const result = await connection.execute(
-            `SELECT p.*, th.record_id, th.OP_phone
-             FROM Patient p
-             JOIN Treatment_history th ON p.phone_number = th.OP_phone
-             WHERE th.Dr_ID = :Dr_ID`,
-            { Dr_ID: req.body.Dr_ID },  // Giả định bạn đã gửi Dr_ID từ client
-            { outFormat: oracledb.OUT_FORMAT_OBJECT }
-        );
+        let query, binds = {};
 
+        if (ipId) {
+            query = `SELECT * FROM Treatment WHERE IP_phone = :ipId`;      ///pls adjust this logic
+            binds = { ipId };
+        } else if (opId) {
+            query = `SELECT * FROM Examination WHERE OP_phone = :opId`;
+            binds = { opId };
+        } else if (phoneNumber) {
+            query = `SELECT * FROM Patient WHERE phone_number = :phoneNumber`;
+            binds = { phoneNumber };
+        } else {
+            res.status(400).send({ error: 'No search parameters provided.' });
+            return;
+        }
+
+        const result = await connection.execute(query, binds, { outFormat: oracledb.OUT_FORMAT_OBJECT });
         res.json(result.rows);
     } catch (err) {
         console.error(err);
