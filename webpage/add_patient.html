@@ -101,30 +101,6 @@
     </form>
     <button class="navigation-btn back-btn" onclick="location.href='patient_home.html'">Back</button>
     <button class="navigation-btn home-btn" onclick="location.href='dashboard.html'">Home</button>
-    <script>
-        document.getElementById('addPatientForm').onsubmit = function(event) {
-            event.preventDefault();
-            // Implement the logic to handle form submission
-            alert('Form submitted. Implement form handling logic.');
-        };
-
-        // Function to handle IP_ID and OP_ID checkbox change
-        function handleCheckboxChange(checkbox, prefix) {
-            if (checkbox.checked) {
-                // In a real application, replace the following line with ID generation logic
-                checkbox.value = prefix + Math.floor(Math.random() * 10000);
-            } else {
-                checkbox.value = 'No'; // Default value when not checked
-            }
-        }
-
-        document.getElementById('ip_id').onchange = function() {
-            handleCheckboxChange(this, 'IP');
-        };
-
-        document.getElementById('op_id').onchange = function() {
-            handleCheckboxChange(this, 'OP');
-        };
-    </script>
+    <script src="addPatient.js"></script>
 </body>
 </html>
