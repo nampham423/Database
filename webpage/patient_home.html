@@ -64,23 +64,48 @@
 <body>
     <div class="search-container">
         <input type="text" id="phoneSearch" placeholder="Search by phone">
-        <input type="text" id="idSearch" placeholder="Search by ID">
+        <input type="text" id="OPidSearch" placeholder="Search by OP ID">
+        <input type="text" id="IPidSearch" placeholder="Search by IP ID">
         <button onclick="searchPatient()">Search</button>
         <button class="home-btn" onclick="location.href='dashboard.html'">Home</button>
         <button class="add-button" onclick="location.href='add_patient.html'">Add Patient</button>
     </div>
-    <table id="patientTable">
+    <h3>Patient Information :</h3>
+    <table id="patientInfoTable">
         <tr>
-            <th>P_Fname</th>
-            <th>P_Lname</th>
-            <th>Gender</th>
-            <th>DoB</th>
-            <th>Address</th>
+            <th>Name</th>
             <th>Phone Number</th>
-            <th>IP_ID</th>
-            <th>OP_ID</th>
         </tr>
-        <!-- Patient data will be inserted here -->
+        <!-- Dữ liệu bệnh nhân sẽ được chèn vào đây -->
+    </table>
+
+    <!-- Bảng Thông Tin Inpatient -->
+    <h3>Inpatient Data :</h3>
+    <table id="inpatientInfoTable">
+        <tr>
+            <th>Record ID</th>
+            <th>Period Number</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Result</th>
+            <th>Fee</th>
+        </tr>
+        <!-- Dữ liệu Inpatient sẽ được chèn vào đây -->
+    </table>
+
+    <!-- Bảng Thông Tin Outpatient -->
+    <h3>Outpatient Data : </h3>
+    <table id="outpatientInfoTable">
+        <tr>
+            <th>Record ID</th>
+            <th>Doctor ID</th>
+            <th>Exam Date</th>
+            <th>Next Exam</th>
+            <th>Diagnosis</th>
+            <th>Fee</th>
+        </tr>
+        <!-- Dữ liệu Outpatient sẽ được chèn vào đây -->
+    </table>
     </table>
     <script>
         function searchPatient() {
