@@ -1,0 +1,73 @@
+<!-- doctor.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e9eff1;
+            margin: 0;
+            padding: 0;
+        }
+        .home-button {
+            padding: 10px;
+            margin: 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #ccc;
+            color: black;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .center {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        input[type="text"] {
+            width: 200px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .search-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4b6cb7;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .search-button:hover {
+            background-color: #365f91;
+        }
+    </style>
+</head>
+<body>
+    <button class="home-button" onclick="location.href='dashboard.html'">HOME</button>
+    <div class="center">
+        <label for="doctorId">Doctor ID</label>
+        <input type="text" id="doctorId" placeholder="Enter Doctor ID">
+        <button class="search-button" onclick="searchDoctor()">Search</button>
+    </div>
+
+    <script>
+        function searchDoctor() {
+            var doctorId = document.getElementById('doctorId').value;
+            // Implement the logic to add the doctor to the database using the ID
+            // This would likely involve an AJAX request to your backend server
+            
+            alert('Functionality to add a doctor with ID ' + doctorId + ' goes here.');
+            // For now, we just show an alert
+        }
+    </script>
+</body>
+</html>
