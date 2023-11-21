@@ -1,0 +1,93 @@
+<!-- patient_home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Homepage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e9eff1;
+        }
+        .search-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #4b6cb7;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .add-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .add-button:hover {
+            background-color: #367c39;
+        }
+        .home-btn {
+            padding: 10px 20px;
+            background-color: #999;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .home-btn:hover {
+            background-color: #777;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <input type="text" id="phoneSearch" placeholder="Search by phone">
+        <input type="text" id="idSearch" placeholder="Search by ID">
+        <button onclick="searchPatient()">Search</button>
+        <button class="home-btn" onclick="location.href='dashboard.html'">Home</button>
+        <button class="add-button" onclick="location.href='add_patient.html'">Add Patient</button>
+    </div>
+    <table id="patientTable">
+        <tr>
+            <th>P_Fname</th>
+            <th>P_Lname</th>
+            <th>Gender</th>
+            <th>DoB</th>
+            <th>Address</th>
+            <th>Phone Number</th>
+            <th>IP_ID</th>
+            <th>OP_ID</th>
+        </tr>
+        <!-- Patient data will be inserted here -->
+    </table>
+    <script>
+        function searchPatient() {
+            // Logic to search patient by phone or ID
+            // This would typically involve an AJAX call to your server-side script
+            alert('Search functionality not implemented yet.');
+        }
+    </script>
+</body>
+</html>

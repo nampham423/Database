@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Patient</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffcc;
+            margin: 0;
+            padding: 20px;
+        }
+        .form-item {
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="tel"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .navigation-btn {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .back-btn { background-color: #f0ad4e; }
+        .home-btn { background-color: #5bc0de; }
+        .back-btn:hover { background-color: #ec971f; }
+        .home-btn:hover { background-color: #31b0d5; }
+    </style>
+</head>
+<body>
+    <form id="addPatientForm">
+        <div class="form-item">
+            <label for="p_fname">Patient First Name:</label>
+            <input type="text" id="p_fname" name="p_fname" placeholder="Enter first name" required>
+        </div>
+        <div class="form-item">
+            <label for="p_lname">Patient Last Name:</label>
+            <input type="text" id="p_lname" name="p_lname" placeholder="Enter last name" required>
+        </div>
+        <div class="form-item">
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" required>
+                <option value="F">Female</option>
+                <option value="M">Male</option>
+            </select>
+        </div>
+        <div class="form-item">
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob" name="dob" required>
+        </div>
+        <div class="form-item">
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" placeholder="Enter address">
+        </div>
+        <div class="form-item">
+            <label for="phone_number">Phone Number:</label>
+            <input type="tel" id="phone_number" name="phone_number" placeholder="Enter phone number" required>
+        </div>
+        <div class="form-item">
+            <label for="ip_id">Inpatient ID (auto-generated if checked):</label>
+            <input type="checkbox" id="ip_id" name="ip_id">
+        </div>
+        <div class="form-item">
+            <label for="op_id">Outpatient ID (auto-generated if checked):</label>
+            <input type="checkbox" id="op_id" name="op_id">
+        </div>
+        <div class="form-item">
+            <input type="submit" class="submit-btn" value="SUBMIT">
+        </div>
+    </form>
+    <button class="navigation-btn back-btn" onclick="location.href='patient_home.html'">Back</button>
+    <button class="navigation-btn home-btn" onclick="location.href='dashboard.html'">Home</button>
+    <script>
+        document.getElementById('addPatientForm').onsubmit = function(event) {
+            event.preventDefault();
+            // Implement the logic to handle form submission
+            alert('Form submitted. Implement form handling logic.');
+        };
+
+        // Function to handle IP_ID and OP_ID checkbox change
+        function handleCheckboxChange(checkbox, prefix) {
+            if (checkbox.checked) {
+                // In a real application, replace the following line with ID generation logic
+                checkbox.value = prefix + Math.floor(Math.random() * 10000);
+            } else {
+                checkbox.value = 'No'; // Default value when not checked
+            }
+        }
+
+        document.getElementById('ip_id').onchange = function() {
+            handleCheckboxChange(this, 'IP');
+        };
+
+        document.getElementById('op_id').onchange = function() {
+            handleCheckboxChange(this, 'OP');
+        };
+    </script>
+</body>
+</html>
