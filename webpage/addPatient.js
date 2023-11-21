@@ -3,21 +3,22 @@ document.getElementById('addPatientForm').onsubmit = function(event) {
     sendData();
 };
 
-function handleCheckboxChange(checkbox, prefix) {
-    if (checkbox.checked) {
-        // Tạo ID ngẫu nhiên với định dạng prefix + 5 chữ số
-        checkbox.value = prefix + Math.floor(10000 + Math.random() * 90000).toString();
-    } else {
-        checkbox.value = '';
-    }
-}
 document.getElementById('ip_id').onchange = function() {
-    handleCheckboxChange(this, 'IP');
+    if (this.checked) {
+        this.value = 'IP' + uuid.v4();
+    } else {
+        this.value = '';
+    }
 };
 
 document.getElementById('op_id').onchange = function() {
-    handleCheckboxChange(this, 'OP');
+    if (this.checked) {
+        this.value = 'OP' + uuid.v4();
+    } else {
+        this.value = '';
+    }
 };
+
 
 function sendData() {
     var formData = new FormData(document.getElementById('addPatientForm'));

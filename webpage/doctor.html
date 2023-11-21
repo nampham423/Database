@@ -62,12 +62,31 @@
     <script>
         function searchDoctor() {
             var doctorId = document.getElementById('doctorId').value;
-            // Implement the logic to add the doctor to the database using the ID
-            // This would likely involve an AJAX request to your backend server
-            
-            alert('Functionality to add a doctor with ID ' + doctorId + ' goes here.');
-            // For now, we just show an alert
+            // AJAX request to your backend server
+            fetch('/search_doctor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ Emp_id: doctorId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.found) {
+                    // If doctor is found, redirect to doctor_info.html
+                    window.location.href = `doctor_info.html?doctorId=${doctorId}`;
+                } else {
+                    // If doctor is not found, show an alert
+                    alert('Doctor not found.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while searching for the doctor.');
+            });
         }
     </script>
 </body>
+</html>
+
 </html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e9eff1;
+            margin: 0;
+            padding: 0;
+        }
+        .button {
+            padding: 10px;
+            margin: 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+        table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+        box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+        }
+        td, th {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        tbody tr:nth-child(odd) {
+            background-color: #f2f2f2; /* Adds zebra-striping for odd rows */
+        }
+        tbody tr:hover {
+            background-color: #ddd; /* Highlight on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="button" onclick="location.href='doctor.html'">Back</button>
+        <button class="button" onclick="location.href='dashboard.html'">Home</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient Name</th>
+                    <th>Patient ID</th>
+                    <th>Patient Age</th>
+                    <th>Gender</th>
+                    <th>Treatment</th>
+                    <th>Phone Number</th>
+                    <th>Visit Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table rows will be inserted here using JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function getDoctorData() {
+            const doctorId = new URLSearchParams(window.location.search).get('doctorId');
+            fetch('/get_patient_info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ Dr_ID: doctorId })
+            })
+            .then(response => response.json())
+            .then(patients => {
+                const tableBody = document.querySelector("table tbody");
+                patients.forEach(patient => {
+                    const row = tableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${patient.Fname} ${patient.Lname}</td>
+                        <td>${patient.OP_id || patient.IP_id}</td>
+                        <td>${calculateAge(patient.DOB)}</td>
+                        <td>${patient.gender}</td>
+                        <td>${patient.Treatment}</td>
+                        <td>${patient.phone_number}</td>
+                        <td>${patient.Visit_time}</td>
+                    `;
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function calculateAge(dob) {
+            const birthday = new Date(dob);
+            const ageDifMs = Date.now() - birthday.getTime();
+            const ageDate = new Date(ageDifMs);
+            return Math.abs(ageDate.getUTCFullYear() - 1970);
+        }
+
+        // Call getDoctorData when the page loads
+        window.onload = getDoctorData;
+    </script>
+</body>
+</html>
