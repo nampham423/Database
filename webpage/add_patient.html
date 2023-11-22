@@ -122,16 +122,24 @@
         };
         function sendData() {
             var formData = new FormData(document.getElementById('addPatientForm'));
+            var object = {};
+            formData.forEach((value, key) => object[key] = value);
 
-            // AJAX call to send data to the server
+            // Đặt giá trị cho IP_id và OP_id nếu chúng được chọn
+            object.ip_id = document.getElementById('ip_id').checked ? 'IP' + uuid.v4() : '';
+            object.op_id = document.getElementById('op_id').checked ? 'OP' + uuid.v4() : '';
+
             fetch('http://localhost:3000/add_patient', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(object)
             })
             .then(response => response.json())
             .then(data => console.log(data))
             .catch(error => console.error('Error:', error));
-        }
+                }
     </script>
 </body>
 </html>

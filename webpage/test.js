@@ -14,61 +14,27 @@ const dbConfig = {
     password: 'Nam422003@',
     connectString: '192.168.85.1:1522/XEPDB1' 
 };
-
-app.post('/add_patient', async (req, res) => {
+async function testConnection() {
     let connection;
-
     try {
-        console.log('Connecting to database...');
         connection = await oracledb.getConnection(dbConfig);
-        console.log('Database connection successful.');
-
-        const { phone_number, p_fname, p_lname, gender, dob, address, op_id, ip_id } = req.body;
-
-        // In ra console các giá trị trước khi thêm vào cơ sở dữ liệu
-        console.log('Preparing to insert patient data...');
-        console.log('Phone Number:', phone_number);
-        console.log('First Name:', p_fname);
-        console.log('Last Name:', p_lname);
-        console.log('Gender:', gender);
-        console.log('DOB:', dob);
-        console.log('Address:', address);
-        console.log('OP ID:', op_id === 'Yes' ? 'Y' : 'N');
-        console.log('IP ID:', ip_id === 'Yes' ? 'Y' : 'N');
-        
-        console.log('Inserting patient data into database...');
-        const result = await connection.execute(
-            `INSERT INTO Patient(phone_number, Fname, Lname, gender, DOB, address, OP_flag, IP_flag) VALUES (:phone_number, :Fname, :Lname, :gender, TO_DATE(:DOB, 'YYYY-MM-DD'), :address, :OP_flag, :IP_flag)`, 
-            {
-                phone_number: phone_number,
-                Fname: p_fname,
-                Lname: p_lname,
-                gender,
-                DOB: dob,
-                address,
-                OP_flag: op_id === 'Yes' ? 'Y' : 'N',
-                IP_flag: ip_id === 'Yes' ? 'Y' : 'N'
-            },
-            { autoCommit: true }
-        );
-        console.log('Patient added successfully:', result);
-
-        res.status(200).json({ message: "Patient added successfully", result });
+        console.log("Kết nối thành công!");
+        // Các truy vấn khác có thể được thực hiện tại đây
     } catch (err) {
-        console.error('Error during database operation:', err);
-        res.status(500).json({ message: "Error adding patient", err });
+        console.error("Có lỗi xảy ra: ", err);
     } finally {
         if (connection) {
             try {
-                console.log('Closing database connection...');
                 await connection.close();
-                console.log('Database connection closed.');
             } catch (err) {
-                console.error('Error closing connection:', err);
+                console.error("Có lỗi khi đóng kết nối: ", err);
             }
         }
     }
-});
+}
+
+testConnection();
+//for testing the connection between database and server
 app.post('/search_doctor', async (req, res) => {
     let connection;
     try {
@@ -135,8 +101,4 @@ app.post('/search_patient', async (req, res) => {
             }
         }
     }
-});
-
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
 });
