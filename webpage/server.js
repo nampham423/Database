@@ -1,31 +1,40 @@
 const express = require('express');
 const oracledb = require('oracledb');
+const cors = require('cors');
 const bodyParser = require('body-parser');
-
 const app = express();
 const port = 3000;
-const { v4: uuidv4 } = require('uuid');
 
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
+app.use(express.json());
+
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*'); // Allow all origins
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
 const dbConfig = {
     user: 'system',
     password: 'Nam422003@',
     connectString: '192.168.85.1:1522/XEPDB1' 
 };
 
+
 app.post('/add_patient', async (req, res) => {
     let connection;
-
     try {
         console.log('Connecting to database...');
         connection = await oracledb.getConnection(dbConfig);
         console.log('Database connection successful.');
 
         const { phone_number, p_fname, p_lname, gender, dob, address, op_id, ip_id } = req.body;
-
         // In ra console các giá trị trước khi thêm vào cơ sở dữ liệu
+        console.log(req.body);
+
         console.log('Preparing to insert patient data...');
         console.log('Phone Number:', phone_number);
         console.log('First Name:', p_fname);
