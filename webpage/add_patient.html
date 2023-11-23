@@ -59,14 +59,14 @@
     </style>
 </head>
 <body>
-    <form id="addPatientForm">
+    <form id="addPatientForm" >
         <div class="form-item">
             <label for="p_fname">Patient First Name:</label>
-            <input type="text" id="p_fname" name="p_fname" placeholder="Enter first name" required>
+            <input type="text" id="p_fname" name="p_fname" placeholder="Enter first name" required value="Jon">
         </div>
         <div class="form-item">
             <label for="p_lname">Patient Last Name:</label>
-            <input type="text" id="p_lname" name="p_lname" placeholder="Enter last name" required>
+            <input type="text" id="p_lname" name="p_lname" placeholder="Enter last name" required value="Jon">
         </div>
         <div class="form-item">
             <label for="gender">Gender:</label>
@@ -77,7 +77,7 @@
         </div>
         <div class="form-item">
             <label for="dob">Date of Birth:</label>
-            <input type="date" id="dob" name="dob" required>
+            <input type="date" id="dob" name="dob">
         </div>
         <div class="form-item">
             <label for="address">Address:</label>
@@ -85,7 +85,7 @@
         </div>
         <div class="form-item">
             <label for="phone_number">Phone Number:</label>
-            <input type="tel" id="phone_number" name="phone_number" placeholder="Enter phone number" required>
+            <input type="tel" id="phone_number" name="phone_number" placeholder="Enter phone number" value="0111">
         </div>
         <div class="form-item">
             <label for="ip_id">Inpatient ID (auto-generated if checked):</label>
@@ -102,44 +102,38 @@
     <button class="navigation-btn back-btn" onclick="location.href='patient_home.html'">Back</button>
     <button class="navigation-btn home-btn" onclick="location.href='dashboard.html'">Home</button>
     <script>
-        document.getElementById('addPatientForm').onsubmit = function(event) {
+        async function sendData() {
+            const formData = new FormData(document.getElementById("addPatientForm"));
+            // AJAX call to send data to the server
+            console.log(formData.body);
+            fetch('http://localhost:3000/add_patient', {
+                method: 'POST',
+                body: formData
+                
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        /*document.getElementById('addPatientForm').onsubmit = function(event) {
             event.preventDefault();
             sendData();
         };
         document.getElementById('ip_id').onchange = function() {
             if (this.checked) {
-                this.value = 'IP' + uuid.v4();
+                this.value = 'IP000000099';
             } else {
                 this.value = '';
             }
         };
         document.getElementById('op_id').onchange = function() {
             if (this.checked) {
-                this.value = 'OP' + uuid.v4();
+                this.value = 'OP000000099';
             } else {
                 this.value = '';
             }
-        };
-        function sendData() {
-            var formData = new FormData(document.getElementById('addPatientForm'));
-            var object = {};
-            formData.forEach((value, key) => object[key] = value);
-
-            // Đặt giá trị cho IP_id và OP_id nếu chúng được chọn
-            object.ip_id = document.getElementById('ip_id').checked ? 'IP' + uuid.v4() : '';
-            object.op_id = document.getElementById('op_id').checked ? 'OP' + uuid.v4() : '';
-
-            fetch('http://localhost:3000/add_patient', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(object)
-            })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
-                }
+        };*/
     </script>
 </body>
 </html>
