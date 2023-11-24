@@ -98,7 +98,7 @@ app.post('/search_doctor', async (req, res) => {
             { eID: doctorId },
         );
 
-        console.log("Kết quả truy vấn:", result);
+        console.log("Kết quả truy vấn:", result.rows);
         if (result.rows.length > 0) {
             // Doctor found
             res.json({ found: true});
@@ -122,34 +122,54 @@ app.post('/search_doctor', async (req, res) => {
 app.post('/get_patient_info', async (req, res) => {
     let connection;
     try {
+        console.log("Attempting database connection...");
         connection = await oracledb.getConnection(dbConfig);
-        const doctorId = req.body.Dr_ID; // Get doctorId from the request body
+        console.log("Database connected.");
+
+        const doctorId = req.body.Dr_ID;
+        console.log("Received Doctor ID:", doctorId);
+
+        console.log("Executing PL/SQL function...");
         const result = await connection.execute(
-            `SELECT * FROM Employee WHERE Emp_id = :Emp_id AND Dr_flag = 'Y'`,
-            { Emp_id: doctorId },
-            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+            `BEGIN :cursor := get_patientInf_by_DrID(:Dr_id); END;`,
+            {
+                Dr_id: doctorId,
+                cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }
+            }
         );
 
-        if (result.rows.length > 0) {
-            // Doctor found
-            res.json({ found: true, doctor: result.rows[0] });
+        const resultSet = result.outBinds.cursor;
+        console.log("Fetching rows from cursor...");
+        const rows = await resultSet.getRows();
+        console.log("Rows fetched:", rows);
+
+        if (rows.length > 0) {
+            console.log("Patients found, sending data.");
+            res.json({ found: true, patients: rows });
         } else {
-            // Doctor not found
+            console.log("No patients found.");
             res.json({ found: false });
         }
+
+        await resultSet.close();
+        console.log("ResultSet closed.");
+
     } catch (err) {
-        console.error(err);
+        console.error("Error occurred:", err);
+        console.error("Error stack:", err.stack);
         res.status(500).send({ error: err.message });
     } finally {
         if (connection) {
             try {
                 await connection.close();
+                console.log("Database connection closed.");
             } catch (err) {
-                console.error(err);
+                console.error("Error closing database connection:", err);
             }
         }
     }
 });
+
 app.post('/search_patient', async (req, res) => {
     let { ipId, opId, phoneNumber } = req.body;
     let connection;
@@ -157,7 +177,6 @@ app.post('/search_patient', async (req, res) => {
     try {
         connection = await oracledb.getConnection(dbConfig);
         let query, binds = {};
-
         if (ipId) {
             query = `SELECT * FROM Treatment WHERE IP_phone = :ipId`;      ///pls adjust this logic
             binds = { ipId };

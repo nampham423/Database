@@ -79,6 +79,7 @@
                     <th>Gender</th>
                     <th>DoB</th>
                     <th>Phone Number</th>
+                    <th>Address</th>
                     <th>OP_ID</th>
                     <th>IP_ID</th>
                 </tr>
@@ -116,7 +117,8 @@
         }
 
         function getDoctorData(doctorId) {
-            fetch('/get_patient_info', {
+            console.log(doctorId);
+            fetch('http://localhost:3000/get_patient_info', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -124,26 +126,37 @@
                 body: JSON.stringify({ Dr_ID: doctorId })
             })
             .then(response => response.json())
-            .then(patients => {
+            .then(data => {
                 const tableBody = document.getElementById('patientTableBody');
+                console.log(data);
                 tableBody.innerHTML = ''; // Clear existing rows
-                patients.forEach(patient => {
+
+                if (data.found && data.patients.length > 0) {
+                    data.patients.forEach(patient => {
+                        const row = tableBody.insertRow();
+                        row.innerHTML = `
+                            <td>${patient[1] || ''}</td> <!-- Patient First Name -->
+                            <td>${patient[1] || ''}</td> <!-- Patient Last Name -->
+                            <td>${patient[2] || ''}</td> <!-- Gender -->
+                            <td>${patient[4] ? new Date(patient[4]).toLocaleDateString() : ''}</td> <!-- DoB -->
+                            <td>${patient[0] || ''}</td> <!-- Phone Number -->
+                            <td>${patient[5] || ''}</td> <!-- Address -->
+                            <td>${patient[6] || ''}</td> <!-- OP_ID -->
+                            <td>${patient[7] || ''}</td> <!-- IP_ID -->
+                        `;
+                    });
+                } else {
+                    // Handle no patients found
                     const row = tableBody.insertRow();
-                    row.innerHTML = `
-                        <td>${patient.Fname}</td>
-                        <td>${patient.Lname}<td>
-                        <td>${patient.gender}</td>
-                        <td>${patient.dob}</td>
-                        <td>${patient.phone_number}</td>
-                        <td>${patient.op_id}</td>
-                        <td>${patient.ip_id}</td>
-                    `;
-                });
+                    row.innerHTML = `<td colspan="7">No patients found for this doctor.</td>`;
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
+                alert('An error occurred while fetching patient information.');
             });
         }
+
     </script>
 </body>
 </html>
