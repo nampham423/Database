@@ -18,8 +18,8 @@ app.use((req, res, next) => {
     next();
 });
 const dbConfig = {
-    user: 'system',
-    password: 'Nam422003@',
+    user: 'hosdb',
+    password: '123',
     connectString: '192.168.85.1:1522/XEPDB1' 
 };
 
@@ -46,7 +46,7 @@ app.post('/add_patient', async (req, res) => {
         console.log('IP ID:', ip_id === 'Yes' ? 'Y' : 'N');
         
         console.log('Inserting patient data into database...');
-        const result = await connection.execute(
+        let result = await connection.execute(
             `INSERT INTO Patient(phone_number, Fname, Lname, gender, DOB, address, OP_flag, IP_flag) VALUES (:phone_number, :Fname, :Lname, :gender, TO_DATE(:DOB, 'YYYY-MM-DD'), :address, :OP_flag, :IP_flag)`, 
             {
                 phone_number: phone_number,
@@ -61,6 +61,14 @@ app.post('/add_patient', async (req, res) => {
             { autoCommit: true }
         );
         console.log('Patient added successfully:', result);
+
+        result = await connection.execute(
+            `SELECT * FROM Patient WHERE phone_number = :phone_number`, 
+            {
+                phone_number: phone_number,
+            },
+        );
+        console.log('Patient output:', result);
 
         res.status(200).json({ message: "Patient added successfully", result });
     } catch (err) {
@@ -80,11 +88,45 @@ app.post('/add_patient', async (req, res) => {
 });
 app.post('/search_doctor', async (req, res) => {
     let connection;
+    const doctorId = req.body.doctorId;
+    console.log('Search ID:', doctorId);
     try {
         connection = await oracledb.getConnection(dbConfig);
+    
+        let result = await connection.execute(
+            `SELECT * FROM employee WHERE emp_ID = :eID AND Dr_Flag = 'Y'`,
+            { eID: doctorId },
+        );
+
+        console.log("Kết quả truy vấn:", result);
+        if (result.rows.length > 0) {
+            // Doctor found
+            res.json({ found: true});
+        } else {
+            // Doctor not found
+            res.json({ found: false });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ error: err.message });
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    }
+});
+app.post('/get_patient_info', async (req, res) => {
+    let connection;
+    try {
+        connection = await oracledb.getConnection(dbConfig);
+        const doctorId = req.body.Dr_ID; // Get doctorId from the request body
         const result = await connection.execute(
             `SELECT * FROM Employee WHERE Emp_id = :Emp_id AND Dr_flag = 'Y'`,
-            { Emp_id: req.body.Emp_id },
+            { Emp_id: doctorId },
             { outFormat: oracledb.OUT_FORMAT_OBJECT }
         );
 
@@ -129,7 +171,6 @@ app.post('/search_patient', async (req, res) => {
             res.status(400).send({ error: 'No search parameters provided.' });
             return;
         }
-
         const result = await connection.execute(query, binds, { outFormat: oracledb.OUT_FORMAT_OBJECT });
         res.json(result.rows);
     } catch (err) {
@@ -145,7 +186,6 @@ app.post('/search_patient', async (req, res) => {
         }
     }
 });
-
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });

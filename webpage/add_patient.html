@@ -62,11 +62,11 @@
     <form id="addPatientForm" action="http://localhost:3000/add_patient" method="POST">
         <div class="form-item">
             <label for="p_fname">Patient First Name:</label>
-            <input type="text" id="p_fname" name="p_fname" placeholder="Enter first name" required value="Jon">
+            <input type="text" id="p_fname" name="p_fname" placeholder="Enter first name" required >
         </div>
         <div class="form-item">
             <label for="p_lname">Patient Last Name:</label>
-            <input type="text" id="p_lname" name="p_lname" placeholder="Enter last name" required value="Jon">
+            <input type="text" id="p_lname" name="p_lname" placeholder="Enter last name" required >
         </div>
         <div class="form-item">
             <label for="gender">Gender:</label>
@@ -85,7 +85,7 @@
         </div>
         <div class="form-item">
             <label for="phone_number">Phone Number:</label>
-            <input type="tel" id="phone_number" name="phone_number" placeholder="Enter phone number" value="0111">
+            <input type="tel" id="phone_number" name="phone_number" placeholder="Enter phone number" >
         </div>
         <div class="form-item">
             <label for="ip_id">Inpatient ID (auto-generated if checked):</label>
@@ -126,20 +126,6 @@
             event.preventDefault();
             const formData = new FormData(document.getElementById("addPatientForm"));
             sendData();
-        };
-        document.getElementById('ip_id').onchange = function() {
-            if (this.checked) {
-                this.value = 'IP000000099';
-            } else {
-                this.value = '';
-            }
-        };
-        document.getElementById('op_id').onchange = function() {
-            if (this.checked) {
-                this.value = 'OP000000099';
-            } else {
-                this.value = '';
-            }
         };
     </script>
 </body>
