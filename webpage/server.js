@@ -23,7 +23,39 @@ const dbConfig = {
     connectString: '192.168.85.1:1522/XEPDB1' 
 };
 
-
+app.post('/login', async (req, res) => {
+    let connection;
+    const loginid = req.body;
+    try {
+        connection = await oracledb.getConnection(dbConfig);
+        let result = await connection.execute(
+            `SELECT * FROM login WHERE username = :id AND pass = :pass`,
+            { 
+                id: loginid.username,
+                pass: loginid.password
+            },
+        );
+        console.log("Kết quả truy vấn:", result.rows);
+        if (result.rows.length > 0) {
+            // Doctor found
+            res.json({ found: true});
+        } else {
+            // Doctor not found
+            res.json({ found: false });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ error: err.message });
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    }
+});
 app.post('/add_patient', async (req, res) => {
     let connection;
     try {
