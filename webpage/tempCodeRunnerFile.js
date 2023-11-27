@@ -1,3 +1,1 @@
-
-    console.error('Error:', error);
-});
+admissionHistory

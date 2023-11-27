@@ -171,40 +171,53 @@ app.post('/get_patient_info', async (req, res) => {
 });
 
 app.post('/search_patient', async (req, res) => {
-    let { ipId, opId, phoneNumber } = req.body;
+    let { searchValue } = req.body;
     let connection;
 
     try {
         connection = await oracledb.getConnection(dbConfig);
-        let query, binds = {};
-        if (ipId) {
-            query = `SELECT * FROM Treatment WHERE IP_phone = :ipId`;      ///pls adjust this logic
-            binds = { ipId };
-        } else if (opId) {
-            query = `SELECT * FROM Examination WHERE OP_phone = :opId`;
-            binds = { opId };
-        } else if (phoneNumber) {
-            query = `SELECT * FROM Patient WHERE phone_number = :phoneNumber`;
-            binds = { phoneNumber };
+
+        // Query for Patient details
+        let patientQuery = `SELECT * FROM Patient WHERE phone_number = :searchValue OR OP_id = :searchValue OR IP_id = :searchValue`;
+        let patientResult = await connection.execute(patientQuery, { searchValue }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+
+        // If patient exists, query for Treatment, Examination, and Admission_History
+        if (patientResult.rows.length > 0) {
+            let treatmentQuery = `SELECT * FROM Treatment WHERE IP_phone = :searchValue`;
+            let examinationQuery = `SELECT * FROM Examination WHERE OP_phone = :searchValue`;
+            let admissionHistoryQuery = `SELECT * FROM Admission_History WHERE IP_phone = :searchValue`;
+
+            let treatmentResult = await connection.execute(treatmentQuery, { searchValue }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+            let examinationResult = await connection.execute(examinationQuery, { searchValue }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+            let admissionHistoryResult = await connection.execute(admissionHistoryQuery, { searchValue }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+
+            // Combine results
+            let combinedResult = {
+                patient: patientResult.rows,
+                treatment: treatmentResult.rows,
+                examination: examinationResult.rows,
+                admissionHistory: admissionHistoryResult.rows
+            };
+            res.json(combinedResult);
+            console.log(combinedResult);
         } else {
-            res.status(400).send({ error: 'No search parameters provided.' });
-            return;
+            res.status(404).send({ message: "Patient not found." });
         }
-        const result = await connection.execute(query, binds, { outFormat: oracledb.OUT_FORMAT_OBJECT });
-        res.json(result.rows);
+
     } catch (err) {
-        console.error(err);
+        console.error('Error executing query:', err);
         res.status(500).send({ error: err.message });
     } finally {
         if (connection) {
             try {
                 await connection.close();
             } catch (err) {
-                console.error(err);
+                console.error('Error closing connection:', err);
             }
         }
     }
 });
+
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
