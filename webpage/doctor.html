@@ -74,8 +74,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>Patient First Name</th>
-                    <th>Patient Last Name</th>
+                    <th>Patient Name</th>
                     <th>Gender</th>
                     <th>DoB</th>
                     <th>Phone Number</th>
@@ -135,10 +134,9 @@
                     data.patients.forEach(patient => {
                         const row = tableBody.insertRow();
                         row.innerHTML = `
-                            <td>${patient[2] || ''}</td> <!-- Patient First Name -->
-                            <td>${patient[1] || ''}</td> <!-- Patient Last Name -->
-                            <td>${patient[3] || ''}</td> <!-- Gender -->
-                            <td>${patient[4] ? new Date(patient[4]).toLocaleDateString() : ''}</td> <!-- DoB -->
+                            <td>${patient[1] || ''}</td> <!-- Patient Name -->
+                            <td>${patient[2] || ''}</td> <!-- Gender -->
+                            <td>${patient[3] ? new Date(patient[4]).toLocaleDateString() : ''}</td> <!-- DoB -->
                             <td>${patient[0] || ''}</td> <!-- Phone Number -->
                             <td>${patient[5] || ''}</td> <!-- Address -->
                             <td>${patient[6] || ''}</td> <!-- OP_ID -->
