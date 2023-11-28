@@ -74,8 +74,8 @@ app.post('/add_patient', async (req, res) => {
         console.log('Gender:', gender);
         console.log('DOB:', dob);
         console.log('Address:', address);
-        console.log('OP ID:', op_id === 'Yes' ? 'Y' : 'N');
-        console.log('IP ID:', ip_id === 'Yes' ? 'Y' : 'N');
+        console.log('OP ID:', op_id === 'on' ? 'Y' : 'N');
+        console.log('IP ID:', ip_id === 'on' ? 'Y' : 'N');
         
         console.log('Inserting patient data into database...');
         let result = await connection.execute(
@@ -87,8 +87,8 @@ app.post('/add_patient', async (req, res) => {
                 gender,
                 DOB: dob,
                 address,
-                OP_flag: op_id === 'Yes' ? 'Y' : 'N',
-                IP_flag: ip_id === 'Yes' ? 'Y' : 'N'
+                OP_flag: op_id === 'on' ? 'Y' : 'N',
+                IP_flag: ip_id === 'on' ? 'Y' : 'N'
             },
             { autoCommit: true }
         );

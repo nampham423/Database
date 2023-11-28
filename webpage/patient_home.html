@@ -10,110 +10,163 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #e9eff1;
+            background-color: #f4f4f4;
+            overflow-y: auto;
         }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
         .search-container {
             display: flex;
             justify-content: space-between;
-            margin: 20px;
+            margin: 20px 0;
+            align-items: center;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
+
         table, th, td {
             border: 1px solid #ddd;
             text-align: left;
-            padding: 8px;
+            padding: 12px;
         }
+
         th {
-            background-color: #4b6cb7;
+            background-color: #007BFF;
             color: white;
         }
+
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+
+        .add-button, .home-btn, .search-button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+            margin-right: 10px; /* Added margin for spacing */
+        }
+
         .add-button {
-            padding: 10px 20px;
             background-color: #4CAF50;
             color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
         }
-        .add-button:hover {
-            background-color: #367c39;
-        }
+
         .home-btn {
-            padding: 10px 20px;
             background-color: #999;
             color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
         }
-        .home-btn:hover {
-            background-color: #777;
+
+        .search-button {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .add-button:hover, .home-btn:hover, .search-button:hover {
+            background-color: #367c39;
+        }
+
+        .main-container {
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+
+        h3 {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .search-button {
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="search-container">
-        <input type="text" id="phoneSearch" placeholder="Search by phone">
-        <input type="text" id="OPidSearch" placeholder="Search by OP ID">
-        <input type="text" id="IPidSearch" placeholder="Search by IP ID">
-        <button onclick="searchPatient()">Search</button>
-        <button class="home-btn" onclick="location.href='dashboard.html'">Home</button>
-        <button class="add-button" onclick="location.href='add_patient.html'">Add Patient</button>
+    <div class="container">
+        <div class="main-container">
+            <div class="search-container">
+                <input type="text" id="phoneSearch" class="search-input" placeholder="Search by phone">
+                <input type="text" id="OPidSearch" class="search-input" placeholder="Search by OP ID">
+                <input type="text" id="IPidSearch" class="search-input" placeholder="Search by IP ID">
+                <button type="submit" onclick="searchPatient()" class="search-button">Search</button>
+                <button class="home-btn" onclick="location.href='dashboard.html'">Home</button>
+                <button class="add-button" onclick="location.href='add_patient.html'">Add Patient</button>
+            </div>
+
+            <h3>Patient Information :</h3>
+            <table id="patientInfoTable">
+                <tr>
+                    <th>Name</th>
+                    <th>Phone Number</th>
+                </tr>
+                <!-- Dữ liệu bệnh nhân sẽ được chèn vào đây -->
+            </table>
+
+            <h3>Inpatient Information :</h3>
+            <!-- Bảng Thông Tin Inpatient -->
+            <h3>Treatment :</h3>
+            <table id="inpatientInfoTable1">
+                <tr>
+                    <th>Record ID</th>
+                    <th>Period Number</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Result</th>
+                    <th>Fee</th>
+                </tr>
+                <!-- Dữ liệu Inpatient sẽ được chèn vào đây -->
+            </table>
+
+            <h3>Admission History :</h3>
+            <table id="inpatientInfoTable2">
+                <tr>
+                    <th>Admission Date</th>
+                    <th>Diagnosis</th>
+                    <th>Discharge Date</th>
+                    <th>Sickroom</th>
+                    <th>Nurse Id</th>
+                </tr>
+                <!-- Dữ liệu Inpatient sẽ được chèn vào đây -->
+            </table>
+
+            <!-- Bảng Thông Tin Outpatient -->
+            <h3>Outpatient Information :</h3>
+            <table id="outpatientInfoTable">
+                <tr>
+                    <th>Examination Date</th>
+                    <th>Diagnosis</th>
+                    <th>Next Examination Date</th>
+                    <th>Fee</th>
+                </tr>
+                <!-- Dữ liệu Outpatient sẽ được chèn vào đây -->
+            </table>
+        </div>
     </div>
-    <h3>Patient Information :</h3>
-    <table id="patientInfoTable">
-        <tr>
-            <th>Name</th>
-            <th>Phone Number</th>
-        </tr>
-        <!-- Dữ liệu bệnh nhân sẽ được chèn vào đây -->
-    </table>
-    <h3>Inpatient Information :</h3>
-    <!-- Bảng Thông Tin Inpatient -->
-    <h3>Treatment :</h3>
-    <table id="inpatientInfoTable1">
-        <tr>
-            <th>Record ID</th>
-            <th>Period Number</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Result</th>
-            <th>Fee</th>
-        </tr>
-        <!-- Dữ liệu Inpatient sẽ được chèn vào đây -->
-    </table>
-    <h3>Admission History :</h3>
-    <table id="inpatientInfoTable2">
-        <tr>
-            <th>Admission Date</th>
-            <th>Diagnosis</th>
-            <th>Discharge Date</th>
-            <th>Sickroom</th>
-            <th>Nurse Id</th>
-        </tr>
-        <!-- Dữ liệu Inpatient sẽ được chèn vào đây -->
-    </table>
-    <!-- Bảng Thông Tin Outpatient -->
-    <h3>Outpatient Information :</h3>
-    <table id="outpatientInfoTable">
-        <tr>
-            <th>Examination Date</th>
-            <th>Diagnosis</th>
-            <th>Next Examination Date</th>
-            <th>Fee</th>
-        </tr>
-        <!-- Dữ liệu Outpatient sẽ được chèn vào đây -->
-    </table>
-    </table>
+
     <script>
         function searchPatient() {
             var ipId = document.getElementById('IPidSearch').value;
@@ -191,8 +244,8 @@
                 var treatmentRow = `<tr>
                     <td>${treatment.RECORD_ID}</td>
                     <td>${treatment.PERIOD_NUMBER}</td>
-                    <td>${treatment.START_DATE}</td>
-                    <td>${treatment.END_DATE}</td>
+                    <td>${treatment.START_DATE ? new Date(treatment.START_DATE).toLocaleDateString() : 'null'}</td>
+                    <td>${treatment.END_DATE ? new Date(treatment.END_DATE).toLocaleDateString() : 'null'}</td>
                     <td>${treatment.RESULT}</td>
                     <td>${treatment.FEE}</td>
                     </tr>`;
@@ -202,9 +255,9 @@
             // Insert admissionHistory data
             data.admissionHistory.forEach(admissionHistory => {
                 var historyRow = `<tr>
-                    <td>${admissionHistory.ADMS_DATE}</td>
+                    <td>${admissionHistory.ADMS_DATE ? new Date(admissionHistory.ADMS_DATE).toLocaleDateString() : 'null'}</td>
                     <td>${admissionHistory.DIAGNOSIS}</td>
-                    <td>${admissionHistory.DISCHARGE_DATE}</td>
+                    <td>${admissionHistory.DISCHARGE_DATE ? new Date(admissionHistory.DISCHARGE_DATE).toLocaleDateString() : 'null'}</td>
                     <td>${admissionHistory.SICKROOM}</td>
                     <td>${admissionHistory.NURSE_ID}</td>
                     </tr>`;
@@ -214,10 +267,10 @@
             // Insert admission history data    
             data.examination.forEach(examination => {
                 var examinationRow = `<tr>
-                    <td>${examination.EXAM_DATE}</td    >
-                    <td>${examination.DIAGNOSIS}</td>
-                    <td>${examination.NEXT_EXAM}</td>
-                    <td>${examination.FEE}</td>
+                    <td>${examination.EXAM_DATE ? new Date(examination.EXAM_DATE).toLocaleDateString() : 'null'}</td>
+                    <td>${examination.DIAGNOSIS ? examination.DIAGNOSIS : 'null'}</td>
+                    <td>${examination.NEXT_EXAM ? new Date(examination.NEXT_EXAM).toLocaleDateString() : 'null'}</td>
+                    <td>${examination.FEE ? examination.FEE : 'null'}</td>
                     </tr>`;
                 document.getElementById('outpatientInfoTable').innerHTML += examinationRow;
             });
