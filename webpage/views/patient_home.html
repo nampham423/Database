@@ -84,9 +84,9 @@
     <div class="container">
         <div class="main-container">
             <div class="search-container">
-                <input type="text" id="phoneSearch" class="search-input" placeholder="Search by phone">
-                <input type="text" id="OPidSearch" class="search-input" placeholder="Search by OP ID">
-                <input type="text" id="IPidSearch" class="search-input" placeholder="Search by IP ID">
+                <button  onclick = insertPatient() id="phoneSearch" class="search-input" placeholder="Search by phone"> Phone </button>
+                <button onclick = insertOP() id="OPidSearch" class="search-input" placeholder="Search by OP ID"> OP_ID </button>
+                <button onclick = insertIP() id="IPidSearch" class="search-input" placeholder="Search by IP ID"> IP_ID </button>
                 <button type="submit" onclick="searchPatient()" class="search-button">Search</button>
                 <button class="home-btn" onclick="location.href='dashboard.html'">Home</button>
                 <button class="add-button" onclick="location.href='add_patient.html'">Add Patient</button>
@@ -95,19 +95,21 @@
 
     <script>
         function searchPatient() {
-            var ipId = document.getElementById('IPidSearch').value;
-            var opId = document.getElementById('OPidSearch').value;
-            var phoneNumber = document.getElementById('phoneSearch').value;
-
+            
+            // var ipId = document.getElementById('IPidSearch').value;
+            // var opId = document.getElementById('OPidSearch').value;
+            // var phoneNumber = document.getElementById('phoneSearch').value;
+            var input  = document.getElementById('dynamicInput').value;
             // Kiểm tra xem có ít nhất một trường được điền
-            if (!ipId && !opId && !phoneNumber) {
+            if (!input) {
                 alert("Please enter at least one search criterion.");
                 return;
             }
 
             // Chỉ lấy giá trị đầu tiên được điền
-            var searchValue = ipId || opId || phoneNumber;
-            var searchQuery = { searchValue };
+            let searchQuery = {
+                 input: input
+            };
 
             fetch('http://localhost:3000/search_patient', {
                 method: 'POST',
@@ -126,7 +128,49 @@
             })
             .catch(error => console.error('Error:', error));
         };
+        
+        function insertPatient() {
+            createAndInsertInput();
+        }
 
+        function insertOP() {
+            createAndInsertInput('OP');
+        }
+
+        function insertIP() {
+            createAndInsertInput('IP');
+        }
+
+        function createAndInsertInput(prefix) {
+            // Create a text input element
+            var inputElement = document.createElement("input");
+            inputElement.type = "text";
+            inputElement.id = "dynamicInput";
+            inputElement.className = "search-input";
+            inputElement.placeholder = "Enter search criterion";
+
+            // Append the input element to the search container
+            var searchContainer = document.querySelector('.search-container');
+            searchContainer.appendChild(inputElement);
+
+            inputElement.focus();
+
+            // Optional: Remove the dynamically created input element after some time
+            setTimeout(function () {
+                searchContainer.removeChild(inputElement);
+            }, 5000); // Adjust the time as needed
+
+            inputElement.addEventListener('change', function () {
+                var searchText = inputElement.value;
+
+                // Check if the searchText has the specified prefix
+                if (prefix && !searchText.startsWith(prefix)) {
+                    alert("Invalid prefix. Please enter a valid search criterion.");
+                    // Redirect to the current page
+                    window.location.href = window.location.href;
+                }
+            });
+        }
     </script>
 </body>
 </html>

@@ -116,7 +116,7 @@ app.post('/add_patient', async (req, res) => {
         );
         console.log('Patient output:', result);
 
-        res.status(200).json({ message: "Patient added successfully", result });
+        res.json({ message: "Patient added successfully", result });
     } catch (err) {
         console.error('Error during database operation:', err);
         res.status(500).json({ message: "Error adding patient", err });
@@ -217,21 +217,20 @@ app.post('/get_patient_info', async (req, res) => {
 });
 
 app.post('/search_patient', async (req, res) => {
-    let { searchValue } = req.body;
     let connection;
-
-    try {
+    const  datas = req.body.input;
+    try { 
         connection = await oracledb.getConnection(dbConfig);
 
         // Query for Patient details
-        let patientQuery = `SELECT * FROM Patient WHERE phone_number = :searchValue OR OP_id = :searchValue OR IP_id = :searchValue`;
-        let patientResult = await connection.execute(patientQuery, { searchValue }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+        let patientQuery = `SELECT * FROM Patient WHERE phone_number = :datas OR OP_id = :datas OR IP_id = :datas`;
+        let patientResult = await connection.execute(patientQuery, {datas}, { outFormat: oracledb.OUT_FORMAT_OBJECT });
 
         if (patientResult.rows.length > 0) {
             res.json(patientResult.rows);
             console.log(patientResult.rows);
         } else {
-            res.status(404).send({ message: "Patient not found." });
+            res.json({ message: "Patient not found." });
         }
 
     } catch (err) {
