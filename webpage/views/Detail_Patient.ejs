@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table with Detail</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .add-btn {
+      cursor: pointer;
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 15px;
+      margin-bottom: 20px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1> PHONE NUMBER: <%= data %> </h1>
+  <button class="add-btn" onclick="addRow()">ADD OP RECORD</button>
+  <h2>Outpatient</h2>
+  <table id="data-table">
+    <thead>
+      <tr>
+        <th>record_id</th>
+        <th>Dr_ID</th>
+        <th>diagnosis</th>
+        <th>fee</th>
+        <th>Exam_date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Data will be dynamically loaded here -->
+    </tbody>
+  </table>
+
+  <h2>Inpatient</h2>
+  <button class="add-btn" onclick="addInpatientRow()">ADD IP RECORD</button>
+
+  <table id="inpatient-data-table">
+    <thead>
+      <tr>
+        
+        <th>Record_id</th>
+        <th>Adms Date</th>
+        <th>Discharge Date</th>
+        <th>Diagnosis</th>
+        <th>Sickroom</th>
+        <th>Nurse ID</th>
+        <th>Fee</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Inpatient data will be dynamically loaded here -->
+    </tbody>
+  </table>
+
+
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script>
+    // Function to fetch data from the server
+    function fetchData() {
+      $.ajax({
+        url: `http://localhost:3000/patient/<%= data %>/OP_info`, //bind cứng
+        method: 'GET',
+        success: function(response) {
+          // Assuming data is an array of objects with properties A, B, C
+          updateTable(response.data);
+        },
+        error: function(error) {
+          console.error('Error fetching data:', error);
+        }
+      });
+    }
+
+    // Function to update the table with the fetched data
+    function updateTable(data) {
+      var table = document.getElementById("data-table").getElementsByTagName('tbody')[0];
+      // Clear existing rows
+      table.innerHTML = '';
+
+      // Populate the table with the fetched data
+      data.forEach(function(item) {
+        var newRow = table.insertRow(table.rows.length);
+
+        var cell1 = newRow.insertCell(0);
+        var cell2 = newRow.insertCell(1);
+        var cell3 = newRow.insertCell(2);
+        var cell4 = newRow.insertCell(3);
+        var cell5 = newRow.insertCell(4);
+        var cell6 = newRow.insertCell(5);
+
+        console.log(item)
+
+        cell1.innerHTML = item[0]; // record_ID
+        cell2.innerHTML = item[1]; // Dr_ID 
+        cell3.innerHTML = item[2]; // diagnosis
+        cell4.innerHTML = item[3]; // fee
+        // item[4] is OP_Phone
+        cell5.innerHTML = item[5]; // exam_date
+
+        // Create a link for the "Detail" action
+        var detailLink = document.createElement('a');
+        detailLink.href = `http://localhost:3000/patient/detail_OP/${item[4]}/${item[0]}/${item[1]}`;
+        detailLink.textContent = 'Detail';
+        cell6.appendChild(detailLink);
+      });
+    }
+
+    // Function to add a new row to the table
+    function addRow(){
+      // Firstly, make API to get in4
+      $.ajax({
+        url: 'http://localhost:3000/patient/<%= data %>/new_OP_info', //bind cứng
+        method: 'GET',
+        success: function(response) {
+          console.log(response.record, response.OP_ID);
+          addNewRec(response.record, response.OP_ID);
+        },
+        error: function(error) {
+          console.error('Error fetching data:', error);
+        }
+      });
+    }
+
+    // Function lấy DrID và gửi post req để cập nhật Treatment_history
+    function addNewRec(record, OP_ID) {
+      PHONE_NUMBER = '<%= data %>';
+      // Create a form for editing the row
+      
+      var form = document.createElement('form');
+      form.action = '/OP/new_rec'; // Update with your server endpoint
+      form.method = 'post';
+
+      // Add hidden input fields for row identification
+      var inputREC = document.createElement('input');
+      inputREC.type = 'hidden';
+      inputREC.name = 'RECORD_ID';
+      inputREC.value = record;
+      form.appendChild(inputREC);
+
+      var inputPHONE = document.createElement('input');
+      inputPHONE.type = 'hidden';
+      inputPHONE.name = 'OP_PHONE';
+      inputPHONE.value = PHONE_NUMBER;
+      form.appendChild(inputPHONE);
+
+      // Add input fields for editing the row
+      var labelDR_ID = document.createElement('label');
+      labelDR_ID.textContent = 'Doctor ID:';
+      labelDR_ID.for = 'inputDR_ID'; // Set for attribute to match the input's id
+      form.appendChild(labelDR_ID);
+
+      var inputDR_ID = document.createElement('input');
+      inputDR_ID.type = 'text';
+      inputDR_ID.id = 'inputDR_ID'; // Set id attribute to match the label's for attribute
+      inputDR_ID.name = 'DR_ID';
+      inputDR_ID.value = '1000';
+      form.appendChild(inputDR_ID);
+
+      // Add a submit button
+      var submitButton = document.createElement('button');
+      submitButton.type = 'submit';
+      submitButton.textContent = 'Insert';
+      form.appendChild(submitButton);
+
+      // Append the form to the body and submit it
+      document.body.appendChild(form);
+    }
+
+    // Fetch data when the page loads
+    fetchData();
+//----------------------------------------------------------------------------------------
+    // FOR INPATIENT FETCHING DATA
+
+
+    function fetchInpatientData() {
+      // Implement AJAX call to your server to get inpatient data
+      $.ajax({
+        url: `http://localhost:3000/patient/<%= data %>/IP_info`, //bind cứng
+        method: 'GET',
+        success: function(response) {
+          // Assuming data is an array of objects with properties A, B, C
+          updateInpatientTable(response.data);
+        },
+        error: function(error) {
+          console.error('Error fetching data:', error);
+        }
+      });
+    }
+
+    // Function to update the inpatient table with the fetched data
+    function updateInpatientTable(data) {
+      // Implement data insertion into the inpatient table
+      var table = document.getElementById("inpatient-data-table").getElementsByTagName('tbody')[0];
+      // Clear existing rows
+      table.innerHTML = '';
+
+      // Populate the table with the fetched data
+      data.forEach(function(item) {
+        var newRow = table.insertRow(table.rows.length);
+
+        var cell1 = newRow.insertCell(0);
+        var cell2 = newRow.insertCell(1);
+        var cell3 = newRow.insertCell(2);
+        var cell4 = newRow.insertCell(3);
+        var cell5 = newRow.insertCell(4);
+        var cell6 = newRow.insertCell(5);
+        var cell7 = newRow.insertCell(6);
+        var cell8 = newRow.insertCell(7);
+        
+        
+        console.log(item)
+
+      cell1.innerHTML = item[0]; // record_ID
+      cell2.innerHTML = item[2]; // ADMS_DATE
+      cell3.innerHTML = item[3]; // DISCHARGE_DATE
+      cell4.innerHTML = item[4]; // DIAGNOSIS
+      cell5.innerHTML = item[5]; // SICKROOM
+      cell6.innerHTML = item[6]; // NURSE_ID
+      cell7.innerHTML = item[7]; // FEE
+
+        // Create a link for the "Detail" action
+        var detailLink = document.createElement('a');
+        detailLink.href = `http://localhost:3000/patient/detail_IP/${item[8]}/${item[0]}`;
+        detailLink.textContent = 'Detail';
+        cell8.appendChild(detailLink);
+
+        //Creat a link for "Update DR_ID" action
+        
+      });
+    }
+
+    // Function to add a new inpatient row to the table
+    function addInpatientRow(){
+      // Implement the logic to add a new inpatient row
+      $.ajax({
+        url: 'http://localhost:3000/patient/<%= data %>/new_IP_info', //bind cứng
+        method: 'GET',
+        success: function(response) {
+          console.log(response.record, response.IP_ID);
+          addNewRecInpatient(response.record, response.IP_ID);
+        },
+        error: function(error) {
+          console.error('Error fetching data:', error);
+        }
+      });
+    }
+    function addNewRecInpatient(record, IP_ID) {
+      PHONE_NUMBER = '<%= data %>';
+      // Create a form for editing the row
+      
+      var form = document.createElement('form');
+      form.action = '/IP/new_rec'; // Update with your server endpoint
+      form.method = 'post';
+
+      // Add hidden input fields for row identification
+      var inputREC = document.createElement('input');
+      inputREC.type = 'hidden';
+      inputREC.name = 'RECORD_ID';
+      inputREC.value = record;
+      form.appendChild(inputREC);
+
+      var inputPHONE = document.createElement('input');
+      inputPHONE.type = 'hidden';
+      inputPHONE.name = 'IP_PHONE';
+      inputPHONE.value = PHONE_NUMBER;
+      form.appendChild(inputPHONE);
+
+      // Add input fields for editing the row
+      var labelNURSE_ID = document.createElement('label');
+      labelNURSE_ID.textContent = 'NURSE ID:';
+      labelNURSE_ID.for = 'inputNURSE_ID'; // Set for attribute to match the input's id
+      form.appendChild(labelNURSE_ID);
+
+      var inputNURSE_ID = document.createElement('input');
+      inputNURSE_ID.type = 'text';
+      inputNURSE_ID.id = 'inputNURSE_ID'; // Set id attribute to match the label's for attribute
+      inputNURSE_ID.name = 'NURSE_ID';
+      form.appendChild(inputNURSE_ID);
+       
+      var labelADMD = document.createElement('label');
+      labelADMD.textContent = 'ADMS DATE:';
+      labelADMD.for = 'ADMD'; // Set for attribute to match the input's id
+      form.appendChild(labelADMD);
+
+      var inputADMD = document.createElement('input');
+      inputADMD.type = 'date';
+      inputADMD.id = 'ADMD'; // Set id attribute to match the label's for attribute
+      inputADMD.name = 'ADMS_DATE';
+      form.appendChild(inputADMD);
+
+      // Add a submit button
+      var submitButton = document.createElement('button');
+      submitButton.type = 'submit';
+      submitButton.textContent = 'Insert';
+      form.appendChild(submitButton);
+
+      // Append the form to the body and submit it
+      document.body.appendChild(form);
+    }
+    // Fetch inpatient data when the page loads or when required
+
+    fetchInpatientData();
+  </script>
+
+</body>
+</html>
+
+

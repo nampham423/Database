@@ -78,10 +78,10 @@ CREATE TABLE Examination
   Dr_ID VARCHAR(4) NOT NULL,
   OP_phone VARCHAR(4) NOT NULL,
   record_id INT NOT NULL,
-  exam_date DATE NOT NULL,
+  exam_date DATE DEFAULT TO_DATE('01-01-2023', 'dd-mm-yyyy') NOT NULL,
   diagnosis VARCHAR(100),
   next_exam DATE,
-  fee FLOAT NOT NULL,
+  fee FLOAT DEFAULT 5 NOT NULL,
   
   PRIMARY KEY (Dr_ID, OP_phone, record_id, exam_date),
   FOREIGN KEY (Dr_ID, OP_phone, record_id) REFERENCES Treatment_history(Dr_ID, OP_phone, record_id)

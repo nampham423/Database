@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Medical Record Tables</title>
+<style>
+  .table-container { margin-bottom: 20px; } /* Adds space between the tables */
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid black; padding: 5px; text-align: left; }
+  .header { background-color: #ffff00; } /* Yellow background for the header */
+  .green { background-color: #90ee90; } /* Light green background */
+  .red { background-color: #ffcccb; } /* Light red background */
+  .submit-btn { background-color: #ffff00; font-weight: bold; padding: 10px; }
+</style>
+</head>
+<body>
+
+<!-- Table for Name and Phone -->
+<div class="table-container">
+  <table>
+    <tr class="green">
+      <td>Name:</td>
+      <td>xxxx</td>
+    </tr>
+    <tr class="green">
+      <td>Phone:</td>
+      <td>xxxx</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Table for InpatientID, Record ID, and Period Number -->
+<div class="table-container">
+  <table>
+    <tr class="red">
+      <td>InpatientID:</td>
+      <td>IPxxxxxxxx</td>
+    </tr>
+    <tr class="red">
+      <td>Record ID:</td>
+      <td>1</td>
+    </tr>
+    <tr class="red">
+      <td>Period number:</td>
+      <td>1</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Table for Inpatient Detail Period (existing table) -->
+<div class="table-container">
+  <table>
+    <tr class="header">
+      <th colspan="6">Inpatient detail period</th>
+    </tr>
+    <tr>
+      <td>Dr ID</td>
+      <td>start date</td>
+      <td>end date</td>
+      <td>result</td>
+      <td>fee</td>
+      <td rowspan="2"><button class="submit-btn">SUBMIT</button></td>
+    </tr>
+    <tr>
+      <td>1001, 1002</td>
+      <td>10-5-2023</td>
+      <td>30-5-2023</td>
+      <td>weak</td>
+      <td>10</td>
+    </tr>
+  </table>
+</div>
+
+</body>
+</html>

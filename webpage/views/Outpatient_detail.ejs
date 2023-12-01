@@ -1,0 +1,177 @@
+<!-- views/data-page.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Page</title>
+  <style>
+    /* Your styles here */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Data Page</h2>
+  <button class="add-btn" 
+  onclick="editRow('<%= JSON.stringify(data[0]) %>')">
+  ADD NEW INFO FOR THIS RECORD</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Dr_ID</th>
+        <th>OP_phone</th>
+        <th>record_id</th>
+        <th>exam_date</th>
+        <th>diagnosis</th>
+        <th>next_exam</th>
+        <th>fee</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for (let i = 0; i < data.length; i++) { %>
+        <tr>
+          <td><%= data[i][0] %></td>
+          <td><%= data[i][1] %></td>
+          <td><%= data[i][2] %></td>
+          <td><%= data[i][3] %></td>
+          <td><%= data[i][4] %></td>
+          <td><%= data[i][5] %></td>
+          <td><%= data[i][6] %></td>
+          <td>
+            <button onclick="editRow('<%= JSON.stringify(data[i]) %>', '<%= i %>')">Edit</button>
+          </td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+
+  <script>
+    function editRow(rowData, rowNumber = -1) {
+      // Get the row data
+      rowData = JSON.parse(rowData);
+      console.log(rowData);
+
+      // Create a form for editing the row
+      var form = document.createElement('form');
+      form.action = '/updateOP`'; // Update with your server endpoint
+      form.method = 'post';
+
+      // Add hidden input fields for row identification
+      var flagUpdate = document.createElement('input');
+      flagUpdate.type = 'hidden';
+      flagUpdate.name = 'flagUpdate';
+      flagUpdate.value = (rowNumber === -1 ? 0 : 1); // =-1 thì là insert
+      form.appendChild(flagUpdate);
+
+      var inputDR_ID = document.createElement('input');
+      inputDR_ID.type = 'hidden';
+      inputDR_ID.name = 'DR_ID';
+      inputDR_ID.value = rowData[0];
+      form.appendChild(inputDR_ID);
+
+      var inputPHONE = document.createElement('input');
+      inputPHONE.type = 'hidden';
+      inputPHONE.name = 'OP_PHONE';
+      inputPHONE.value = rowData[1];
+      form.appendChild(inputPHONE);
+
+      var inputREC = document.createElement('input');
+      inputREC.type = 'hidden';
+      inputREC.name = 'RECORD_ID';
+      inputREC.value = rowData[2];
+      form.appendChild(inputREC);
+
+      var inputEX_D = document.createElement('input');
+      inputEX_D.type = 'hidden';
+      inputEX_D.name = 'EXAM_DATE';
+      inputEX_D.value = rowData[3];
+      form.appendChild(inputEX_D);
+
+      // Add input fields for editing the row
+      var label_editEX_D = document.createElement('label');
+      label_editEX_D.textContent = 'Exam Date:';
+      label_editEX_D.for = 'editEX_D';
+      form.appendChild(label_editEX_D);
+
+      var editEX_D = document.createElement('input');
+      editEX_D.type = 'date'; // Use date input for editing date
+      editEX_D.name = 'UP_EXAM_DATE';
+      editEX_D.id = 'editEX_D';
+      editEX_D.value = rowData[3]; 
+      form.appendChild(editEX_D);
+
+      var label_editNXT_E = document.createElement('label');
+      label_editNXT_E.textContent = 'Next Exam:';
+      label_editNXT_E.for = 'editNXT_E';
+      form.appendChild(label_editNXT_E);
+
+      var editNXT_E = document.createElement('input');
+      editNXT_E.type = 'date'; // Use date input for editing date
+      editNXT_E.name = 'UP_NEXT_EXAM';
+      editNXT_E.id = 'editNXT_E'
+      editNXT_E.value = rowData[5]; 
+      form.appendChild(editNXT_E);
+
+      var label_editDIAG = document.createElement('label');
+      label_editDIAG.textContent = 'Diagnosis:';
+      label_editDIAG.for = 'editDIAG';
+      form.appendChild(label_editDIAG);
+
+      var editDIAG = document.createElement('input');
+      editDIAG.type = 'text';
+      editDIAG.name = 'UP_DIAG';
+      editDIAG.id = 'editDIAG';
+      editDIAG.value = rowData[4];
+      form.appendChild(editDIAG);
+
+      var label_editFEE = document.createElement('label');
+      label_editFEE.textContent = 'Fee:';
+      label_editFEE.for = 'editFEE';
+      form.appendChild(label_editFEE);
+
+      var editFEE = document.createElement('input');
+      editFEE.type = 'number';
+      editFEE.name = 'UP_FEE';
+      editFEE.id = 'editFEE';
+      editFEE.value = rowData[6];
+      form.appendChild(editFEE);
+
+      // Add a submit button
+      var submitButton = document.createElement('button');
+      submitButton.type = 'submit';
+      if (flagUpdate.value ==0)
+      {
+        submitButton.textContent = 'Insert';
+      }
+      else{
+        submitButton.textContent = 'Update';
+      }
+   
+      form.appendChild(submitButton);
+
+      // Append the form to the body and submit it
+      document.body.appendChild(form);
+      //form.submit();
+    }
+  </script>
+
+</body>
+</html>

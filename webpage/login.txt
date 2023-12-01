@@ -1,0 +1,10 @@
+CREATE TABLE login(
+    username VARCHAR(30) NOT NULL,
+    pass VARCHAR(30) NOT NULL,
+    PRIMARY KEY (username)
+);
+INSERT INTO login (username, pass) VALUES ('password', 'password123');
+INSERT INTO login (username, pass) VALUES ('p1ssw4ord', 'password');
+INSERT INTO login (username, pass) VALUES ('gmail.com', 'ggmail');
+INSERT INTO login (username, pass) VALUES ('octus123', 'otus123');
+INSERT INTO login (username, pass) VALUES ('Namkm123@', '123321');

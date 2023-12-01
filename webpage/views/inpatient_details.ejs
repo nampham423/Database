@@ -1,0 +1,316 @@
+<!-- views/data-page.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Page</title>
+  <style>
+    /* Your styles here */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Data Page</h2>
+  <button class="add-btn" 
+  onclick="editRow('<%= JSON.stringify(data[0]) %>')">
+  ADD NEW PERIOD FOR THIS RECORD</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>period_number</th>
+        
+         <th>Dr_ID</th>
+        <th>start_date</th>
+        <th>end_date</th>
+        <th>result</th>
+        <th>fee</th>
+        <th>IP_PHONE</th>
+        <th>record_id</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for (let i = 0; i < data.length; i++) {%>
+        <tr>
+          <td><%= data[i][0] %></td>
+          <td><%= data[i][1] %></td>
+          <td><%= data[i][2] %></td>
+          <td><%= data[i][3] %></td>
+          <td><%= data[i][4] %></td>
+          <td><%= data[i][5] %></td>
+          <td><%= data[i][6] %></td>
+          <td><%= data[i][7] %></td>
+           
+          <td>
+            <button onclick="editRow('<%= JSON.stringify(data[i]) %>', '<%= i %>')">Edit</button>
+          </td>
+          <td>
+            <button onclick="insertDr('<%=JSON.stringify(data[i]) %>', '<%= i %>')">Add Dr_ID</button>
+          </td>
+        </tr>
+         
+      <% } %>
+      
+    </tbody>
+  </table>
+
+  <script>
+    function editRow(rowData, rowNumber = -1) {
+      // Get the row data
+      rowData = JSON.parse(rowData);
+      console.log(rowData);
+
+      
+      // Create a form for editing the row
+      var form = document.createElement('form');
+      form.action = '/updateIP'; // Update with your server endpoint
+      form.method = 'post';
+
+      // Add hidden input fields for row identification
+      var flagUpdate = document.createElement('input');
+      flagUpdate.type = 'hidden';
+      flagUpdate.name = 'flagUpdate';
+      flagUpdate.value = (rowNumber === -1 ? 0 : 1); // =-1 thì là insert
+      form.appendChild(flagUpdate);
+
+       
+    
+    
+  
+      var inputRecord_ID = document.createElement('input');
+      inputRecord_ID.type = 'hidden';
+      inputRecord_ID.name = 'RECORD_ID';
+      inputRecord_ID.value = rowData[7];
+      form.appendChild(inputRecord_ID);
+      
+
+      var inputPeriod = document.createElement('input');
+      inputPeriod.type = 'hidden';
+      inputPeriod.name = 'PERIOD_NUMBER';
+      inputPeriod.value = rowData[0];
+      form.appendChild(inputPeriod);
+
+      var labelPeriod  = document.createElement('label');
+      labelPeriod.textContent = 'PERIOD_NUMBER :';
+      labelPeriod.for = 'editPeriod';
+      form.appendChild(labelPeriod);
+
+      var editPeriod = document.createElement('input');
+      editPeriod.type = 'text'; // Use date input for editing date
+      editPeriod.name = 'UP_PERIOD_NUMBER';
+      editPeriod.id = 'editPeriod';
+      editPeriod.value = rowData[0]; 
+      form.appendChild(editPeriod);
+
+
+      
+      
+
+      // // Add input fields for editing the row
+      // var label_editEX_D = document.createElement('label');
+      // label_editEX_D.textContent = 'period_number:';
+      // label_editEX_D.for = 'editPeriod';
+      // form.appendChild(label_editEX_D);
+
+      // var editPeriod = document.createElement('input');
+      // editPeriod.type = 'date'; // Use date input for editing date
+      // editPeriod.name = 'UP_PERIOD_NUMBER';
+      // editPeriod.id = 'editPeriod';
+      // editPeriod.value = rowData[0]; 
+      // form.appendChild(editPeriod);
+      
+      
+
+      var inputStart = document.createElement('input');
+      inputStart.type = 'hidden';
+      inputStart.name = 'START_DATE';
+      inputStart.value = rowData[2];
+      form.appendChild(inputStart);
+
+
+      var labelStart = document.createElement('label');
+      labelStart.textContent = 'start_date:';
+      labelStart.for = 'editStart';
+      form.appendChild(labelStart);
+
+
+      var editStart = document.createElement('input');
+      editStart.type = 'date'; // Use date input for editing date
+      editStart.name = 'UP_START_NUMBER';
+      editStart.id = 'editStart';
+      editStart.value = rowData[2]; 
+      form.appendChild(editStart);
+
+      var inputEnd = document.createElement('input');
+      inputEnd.type = 'hidden';
+      inputEnd.name = 'END_DATE';
+      inputEnd.value = rowData[3];
+      form.appendChild(inputEnd);
+
+
+      var labelEnd = document.createElement('label');
+      labelEnd.textContent = 'end_date:';
+      labelEnd.for = 'editEnd';
+      form.appendChild(labelEnd);
+
+
+      var editEnd = document.createElement('input');
+      editEnd.type = 'date'; // Use date input for editing date
+      editEnd.name = 'UP_END_NUMBER';
+      editEnd.id = 'editEnd';
+      editEnd.value = rowData[3]; 
+      form.appendChild(editEnd);
+
+      var inputResult = document.createElement('input');
+      inputResult.type = 'hidden';
+      inputResult.name = 'RESULT';
+      inputResult.value = rowData[4];
+      form.appendChild(inputResult);
+
+
+      var labelResult = document.createElement('label');
+      labelResult.textContent = 'result:';
+      labelResult.for = 'editResult';
+      form.appendChild(labelResult);
+
+
+      var editResult = document.createElement('input');
+      editResult.type = 'text'; // Use date input for editing date
+      editResult.name = 'UP_RESULT';
+      editResult.id = 'editResult';
+      editResult.value = rowData[4]; 
+      form.appendChild(editResult);
+
+      var inputFee = document.createElement('input');
+      inputFee.type = 'hidden';
+      inputFee.name = 'FEE';
+      inputFee.value = rowData[5];
+      form.appendChild(inputFee);
+
+
+      var labelFee = document.createElement('label');
+      labelFee.textContent = 'fee:';
+      labelFee.for = 'editFee';
+      form.appendChild(labelFee);
+
+
+      var editFee = document.createElement('input');
+      editFee.type = 'text'; // Use date input for editing date
+      editFee.name = 'UP_FEE';
+      editFee.id = 'editFee';
+      editFee.value = rowData[5]; 
+      form.appendChild(editFee);
+
+      var inputIP_Phone = document.createElement('input');
+      inputIP_Phone.type = 'hidden';
+      inputIP_Phone.name = 'IP_PHONE';
+      inputIP_Phone.value = rowData[6];
+      form.appendChild(inputIP_Phone);
+       
+
+      // Add a submit button
+      var submitButton = document.createElement('button');
+      submitButton.type = 'submit';
+      if (flagUpdate.value ==0)
+      {
+        submitButton.textContent = 'Insert';
+      }
+      else{
+        submitButton.textContent = 'Update';
+      }
+      form.appendChild(submitButton);
+
+      // Append the form to the body and submit it
+      document.body.appendChild(form);
+      //form.submit();
+    }
+    
+    
+    function insertDr(rowData, rowNumber=-1){
+      rowData = JSON.parse(rowData);
+      console.log(rowData);
+
+
+      // Create a form for adding doctors
+      var form = document.createElement('form');
+      form.action = '/addDr';
+      form.method = 'post';
+
+      
+      var inputPeriod = document.createElement('input');
+      inputPeriod.type = 'hidden';
+      inputPeriod.name = 'PERIOD_NUMBER';
+      inputPeriod.value = rowData[0];
+      form.appendChild(inputPeriod);
+      
+      var inputRecord_ID = document.createElement('input');
+      inputRecord_ID.type = 'hidden';
+      inputRecord_ID.name = 'RECORD_ID';
+      inputRecord_ID.value = rowData[7];
+      form.appendChild(inputRecord_ID);
+
+
+      // var flagUpdate = document.createElement('input');
+      // flagUpdate.type = 'hidden';
+      // flagUpdate.name = 'flagUpdate';
+      // flagUpdate.value = (rowNumber === -1 ? 0 : 1); // =-1 thì là insert
+      // form.appendChild(flagUpdate);
+
+       
+      var inputIP_Phone = document.createElement('input');
+      inputIP_Phone.type = 'hidden';
+      inputIP_Phone.name = 'IP_PHONE';
+      inputIP_Phone.value = rowData[6];
+      form.appendChild(inputIP_Phone);
+      
+      var inputDR_ID = document.createElement('input');
+      inputDR_ID.type = 'hidden';
+      inputDR_ID.name = 'DR_ID';
+      inputDR_ID.value = rowData[1];
+      form.appendChild(inputDR_ID);
+
+      var labelDR_ID = document.createElement('label');
+      labelDR_ID.textContent = 'DR_ID:';
+      labelDR_ID.for = 'DR_ID';
+      form.appendChild(labelDR_ID);
+
+      var editDR_ID = document.createElement('input');
+      editDR_ID.type = 'text'; // Use date input for editing date
+      editDR_ID.name = 'UP_DR_ID';
+      editDR_ID.id = 'editDR_ID';
+      editDR_ID.value = rowData[1];
+      
+
+
+      var submitButton = document.createElement('button');
+      submitButton.type = 'submit';
+      submitButton.textContent = 'Insert Dr';
+      form.appendChild(submitButton);
+
+      form.appendChild(editDR_ID);
+
+      document.body.appendChild(form);
+    }
+
+  </script>
+
+</body>
+</html>

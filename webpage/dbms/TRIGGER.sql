@@ -223,8 +223,7 @@ BEGIN
     SELECT Dr_flag INTO v_flag
     FROM Employee
     WHERE Emp_ID = :NEW.Nurse_ID;
-    -- Check if the retrieved Dr_flag is 'N' aka is a Nurse
-    IF v_flag = 'N' THEN
+    -- Check if the retrieved Dr_flag is 'N' aka   = 'N' THEN
         -- Allow the update to proceed
         NULL;
     ELSE
@@ -259,6 +258,26 @@ BEGIN
         NULL;
     ELSE
         -- Raise an error if OP_flag is not 'Y'
+        RAISE_APPLICATION_ERROR(-20001, 'DrID must belong to Doctor!');
+    END IF;
+END;
+//error
+CREATE OR REPLACE TRIGGER check_is_Dr_Incharge
+BEFORE INSERT OR UPDATE ON Incharge
+FOR EACH ROW
+DECLARE
+    v_flag CHAR(1);
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Checking Dr_ID: ' || :NEW.Dr_ID);
+    SELECT Dr_flag INTO v_flag
+    FROM Employee
+    WHERE Emp_ID = :NEW.Dr_ID;
+
+    DBMS_OUTPUT.PUT_LINE('Found Dr_flag: ' || v_flag);
+
+    IF v_flag = 'Y' THEN
+        NULL;
+    ELSE
         RAISE_APPLICATION_ERROR(-20001, 'DrID must belong to Doctor!');
     END IF;
 END;
@@ -304,13 +323,13 @@ BEGIN
     WHERE IP_Phone = :NEW.IP_Phone AND Record_ID = :NEW.Record_ID;
     -- Check if the start_date is larger than the admission date
     IF :NEW.start_date < v_admission_date THEN
-        RAISE_APPLICATION_ERROR(-20011, 'start_date of Treatment must be later than Admis_date!');
+        RAISE_APPLICATION_ERROR(-20000, 'start_date of Treatment must be later than Admis_date!');
     END IF;
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
         -- No admission history found for the specified IP_ID and Record_ID
         -- You may choose to handle this situation as per your requirements
-        RAISE_APPLICATION_ERROR(-200012, 'No corresponding admission history found.');
+        RAISE_APPLICATION_ERROR(-20000, 'No corresponding admission history found.');
 END start_date_later_adms_date;
 
 --------------
