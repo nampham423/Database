@@ -6,8 +6,6 @@ const path = require('path');
 
 const app = express();
 const port = 3000;
-app.use(express.static(path.join(__dirname, 'views')));
-
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -21,17 +19,8 @@ app.use((req, res, next) => {
     next();
 });
 const dbConfig = {
-    user: "hosdb", password: "123", connectionString: "192.168.85.1:1522/XEPDB1"
+    user: "hospitalDB2", password: "psw", connectionString: "localhost:1521"
 };
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'index.html'));
-});
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-    import('open').then(open => {
-        open.default(`http://localhost:${port}`);
-    });
-});
 
 app.post('/login', async (req, res) => {
     let connection;
@@ -116,7 +105,7 @@ app.post('/add_patient', async (req, res) => {
         );
         console.log('Patient output:', result);
 
-        res.json({ message: "Patient added successfully", result });
+        res.status(200).json({ message: "Patient added successfully", result });
     } catch (err) {
         console.error('Error during database operation:', err);
         res.status(500).json({ message: "Error adding patient", err });
@@ -217,20 +206,37 @@ app.post('/get_patient_info', async (req, res) => {
 });
 
 app.post('/search_patient', async (req, res) => {
+    let { searchValue } = req.body;
     let connection;
-    const  datas = req.body.input;
-    try { 
+
+    try {
         connection = await oracledb.getConnection(dbConfig);
 
         // Query for Patient details
-        let patientQuery = `SELECT * FROM Patient WHERE phone_number = :datas OR OP_id = :datas OR IP_id = :datas`;
-        let patientResult = await connection.execute(patientQuery, {datas}, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+        let patientQuery = `SELECT * FROM Patient WHERE phone_number = :searchValue OR OP_id = :searchValue OR IP_id = :searchValue`;
+        let patientResult = await connection.execute(patientQuery, { searchValue }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
 
+        // If patient exists, query for Treatment, Examination, and Admission_History
         if (patientResult.rows.length > 0) {
-            res.json(patientResult.rows);
-            console.log(patientResult.rows);
+            let treatmentQuery = `SELECT * FROM Treatment WHERE IP_phone = :searchValue`;
+            let examinationQuery = `SELECT * FROM Examination WHERE OP_phone = :searchValue`;
+            let admissionHistoryQuery = `SELECT * FROM Admission_History WHERE IP_phone = :searchValue`;
+
+            let treatmentResult = await connection.execute(treatmentQuery, { searchValue }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+            let examinationResult = await connection.execute(examinationQuery, { searchValue }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+            let admissionHistoryResult = await connection.execute(admissionHistoryQuery, { searchValue }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+
+            // Combine results
+            let combinedResult = {
+                patient: patientResult.rows,
+                treatment: treatmentResult.rows,
+                examination: examinationResult.rows,
+                admissionHistory: admissionHistoryResult.rows
+            };
+            res.json(combinedResult);
+            console.log(combinedResult);
         } else {
-            res.json({ message: "Patient not found." });
+            res.status(404).send({ message: "Patient not found." });
         }
 
     } catch (err) {
@@ -838,3 +844,7 @@ app.post('/addDr', async (req, res) => {
     }
   }
 );
+
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
