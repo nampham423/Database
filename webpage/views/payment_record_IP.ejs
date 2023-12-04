@@ -1,0 +1,116 @@
+ <!-- views/data-page.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Page</title>
+  <style>
+    /* Your styles here */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+ 
+  <h1>Payment Record</h1>
+  
+
+  <table id="Payment_OP">
+    <thead>
+      <tr>
+      
+        
+         <th>phone</th>
+        <th>Med_ID</th>
+        <th>name</th>
+        <th>expr_day</th>
+        <th>fee</th>
+        <th>sell_price</th>
+        <th>Provider_id</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      <% for (let i = 0; i < data.length; i++) {%>
+        <tr>
+          <td><%= data[i][0] %></td>
+          <td><%= data[i][1] %></td>
+          <td><%= data[i][2] %></td>
+          <td><%= data[i][3] %></td>
+          <td><%= data[i][4] %></td>
+          <td><%= data[i][5] %></td>
+          <td><%= data[i][6] %></td>
+           
+            
+            
+         
+      <% } %>
+      
+    </tbody> 
+  </table>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script>
+    function fetchData() {
+      $.ajax({
+        url: `http://localhost:3000/patient/<%= data %>/paymentRecordIP`, //bind cứng
+        method: 'GET',
+        success: function(response) {
+          // Assuming data is an array of objects with properties A, B, C
+          updateOPpayment(response.data);
+        },
+        error: function(error) {
+          console.error('Error fetching data:', error);
+        }
+      });
+    }
+     
+     
+    function updateOPpayment(data) {
+      var table = document.getElementById("Payment_OP").getElementsByTagName('tbody')[0];
+      // Clear existing rows
+      table.innerHTML = '';
+
+      // Populate the table with the fetched data
+      data.forEach(function(item) {
+        var newRow = table.insertRow(table.rows.length);
+
+        var cell1 = newRow.insertCell(0);
+        var cell2 = newRow.insertCell(1);
+        var cell3 = newRow.insertCell(2);
+        var cell4 = newRow.insertCell(3);
+        var cell5 = newRow.insertCell(4);
+        var cell6 = newRow.insertCell(5);
+        var cell7 = newRow.insertCell(6);
+
+        console.log(item)
+
+        cell1.innerHTML = item[0]; // record_ID
+        cell2.innerHTML = item[1]; // Dr_ID 
+        cell3.innerHTML = item[2]; // diagnosis
+        cell4.innerHTML = item[3]; // fee
+        cell5.innerHTML = item[4];
+        cell5.innerHTML = item[5]; // exam_date
+        cell6.innerHTML = item[6];
+
+ 
+      });
+    }
+  </script>
+
+</body>
+</html>

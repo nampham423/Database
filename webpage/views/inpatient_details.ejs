@@ -65,14 +65,17 @@
           <td>
             <button onclick="insertDr('<%=JSON.stringify(data[i]) %>', '<%= i %>')">Add Dr_ID</button>
           </td>
+          <td>
+            <a class="add-btn" href="http://localhost:3000/patient/<%= data[i][6] %>/paymentRecordIP" style="text-decoration: none; color: white; background-color: blue; padding: 10px 15px; border-radius: 5px; border: none; cursor: pointer;">Medication</a>
+          </td>
         </tr>
-         
       <% } %>
       
     </tbody>
   </table>
 
   <script>
+           
     function editRow(rowData, rowNumber = -1) {
       // Get the row data
       rowData = JSON.parse(rowData);

@@ -58,12 +58,18 @@
           <td>
             <button onclick="editRow('<%= JSON.stringify(data[i]) %>', '<%= i %>')">Edit</button>
           </td>
+          
+          <td>
+            
+             <a class="add-btn" href="http://localhost:3000/patient/<%= data[i][1] %>/paymentRecordOP" style="text-decoration: none; color: white; background-color: blue; padding: 10px 15px; border-radius: 5px; border: none; cursor: pointer;">Medication</a>
+          </td>
         </tr>
       <% } %>
     </tbody>
   </table>
 
   <script>
+     
     function editRow(rowData, rowNumber = -1) {
       // Get the row data
       rowData = JSON.parse(rowData);
@@ -71,7 +77,7 @@
 
       // Create a form for editing the row
       var form = document.createElement('form');
-      form.action = '/updateOP`'; // Update with your server endpoint
+      form.action = '/updateOP'; // Update with your server endpoint
       form.method = 'post';
 
       // Add hidden input fields for row identification
@@ -157,14 +163,12 @@
       // Add a submit button
       var submitButton = document.createElement('button');
       submitButton.type = 'submit';
-      if (flagUpdate.value ==0)
-      {
+      if(flagUpdate.value == 0){
         submitButton.textContent = 'Insert';
       }
-      else{
+      else {
         submitButton.textContent = 'Update';
       }
-   
       form.appendChild(submitButton);
 
       // Append the form to the body and submit it

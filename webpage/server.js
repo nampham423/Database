@@ -6,6 +6,8 @@ const path = require('path');
 
 const app = express();
 const port = 3000;
+app.use(express.static(path.join(__dirname, 'views')));
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -19,8 +21,17 @@ app.use((req, res, next) => {
     next();
 });
 const dbConfig = {
-    user: "hospitalDB2", password: "psw", connectionString: "localhost:1521"
+    user: "newHos", password: "psw", connectionString: "localhost:1521"
 };
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+    import('open').then(open => {
+        open.default(`http://localhost:${port}`);
+    });
+});
 
 app.post('/login', async (req, res) => {
     let connection;
@@ -105,7 +116,7 @@ app.post('/add_patient', async (req, res) => {
         );
         console.log('Patient output:', result);
 
-        res.status(200).json({ message: "Patient added successfully", result });
+        res.json({ message: "Patient added successfully", result });
     } catch (err) {
         console.error('Error during database operation:', err);
         res.status(500).json({ message: "Error adding patient", err });
@@ -206,37 +217,20 @@ app.post('/get_patient_info', async (req, res) => {
 });
 
 app.post('/search_patient', async (req, res) => {
-    let { searchValue } = req.body;
     let connection;
-
-    try {
+    const  datas = req.body.input;
+    try { 
         connection = await oracledb.getConnection(dbConfig);
 
         // Query for Patient details
-        let patientQuery = `SELECT * FROM Patient WHERE phone_number = :searchValue OR OP_id = :searchValue OR IP_id = :searchValue`;
-        let patientResult = await connection.execute(patientQuery, { searchValue }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+        let patientQuery = `SELECT * FROM Patient WHERE phone_number = :datas OR OP_id = :datas OR IP_id = :datas`;
+        let patientResult = await connection.execute(patientQuery, {datas}, { outFormat: oracledb.OUT_FORMAT_OBJECT });
 
-        // If patient exists, query for Treatment, Examination, and Admission_History
         if (patientResult.rows.length > 0) {
-            let treatmentQuery = `SELECT * FROM Treatment WHERE IP_phone = :searchValue`;
-            let examinationQuery = `SELECT * FROM Examination WHERE OP_phone = :searchValue`;
-            let admissionHistoryQuery = `SELECT * FROM Admission_History WHERE IP_phone = :searchValue`;
-
-            let treatmentResult = await connection.execute(treatmentQuery, { searchValue }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
-            let examinationResult = await connection.execute(examinationQuery, { searchValue }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
-            let admissionHistoryResult = await connection.execute(admissionHistoryQuery, { searchValue }, { outFormat: oracledb.OUT_FORMAT_OBJECT });
-
-            // Combine results
-            let combinedResult = {
-                patient: patientResult.rows,
-                treatment: treatmentResult.rows,
-                examination: examinationResult.rows,
-                admissionHistory: admissionHistoryResult.rows
-            };
-            res.json(combinedResult);
-            console.log(combinedResult);
+            res.json(patientResult.rows);
+            console.log(patientResult.rows);
         } else {
-            res.status(404).send({ message: "Patient not found." });
+            res.json({ message: "Patient not found." });
         }
 
     } catch (err) {
@@ -845,6 +839,203 @@ app.post('/addDr', async (req, res) => {
   }
 );
 
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+//---------------------------------------------------PAYMENT RECORD-----------------------------------------------------
+app.get('/patient/:phone/paymentRecordOP', async (req, res) => {
+    // const phone = req.params.phone;
+    // console.log('Patient Phone number:', phone);
+    // let connection;
+
+    // try {
+    //     connection = await oracledb.getConnection(dbConfig);
+    
+    //     let result = await connection.execute(
+    //         `  SELECT DISTINCT
+    //         E.OP_PHONE, 
+    //         E.MED_ID, 
+    //         M.NAME, 
+    //         M.EXPR_DATE,
+    //         X.FEE,
+    //         M.SELL_PRICE,
+    //         P.PROV_ID
+    //     FROM 
+    //         EXAM_MED E
+    //     JOIN 
+    //         EXAMINATION X ON E.OP_PHONE = X.OP_PHONE AND E.RECORD_ID = X.RECORD_ID
+    //     JOIN 
+    //         MEDICATION M ON E.MED_ID = M.MED_ID
+    //     JOIN 
+    //         PROVIDED P ON M.MED_ID = P.MED_ID
+    //     WHERE 
+    //         E.OP_PHONE = :phone_t
+    //      `,
+    //         { phone_t: phone }  
+    //     );
+
+    //     console.log("Kết quả truy vấn:", result.rows);
+    //     if (result.rows.length > 0) {
+    //         res.json({ data: result.rows });
+    //     } 
+    //     //else {     }
+    // } catch (err) {
+    //     console.error(err);
+    //     res.status(500).send({ error: err.message });
+    // } finally {
+    //     if (connection) {
+    //         try {
+    //             await connection.close();
+    //         } catch (err) {
+    //             console.error(err);
+    //         }
+    //     }
+    // }
+    const phone = req.params.phone;
+     
+    console.log('Patient Phone number:', phone);
+    try {
+        // Retrieve parameters from the request
+            
+        let connection = await oracledb.getConnection(dbConfig);
+    
+        let result = await connection.execute(
+            `  SELECT DISTINCT
+                   E.OP_PHONE, 
+                     E.MED_ID, 
+                     M.NAME, 
+                     M.EXPR_DATE,
+                     X.FEE,
+                     M.SELL_PRICE,
+                     P.PROV_ID
+                 FROM 
+                     EXAM_MED E
+                 JOIN 
+                     EXAMINATION X ON E.OP_PHONE = X.OP_PHONE AND E.RECORD_ID = X.RECORD_ID
+                 JOIN 
+                     MEDICATION M ON E.MED_ID = M.MED_ID
+                 JOIN 
+                     PROVIDED P ON M.MED_ID = P.MED_ID
+                 WHERE 
+                     E.OP_PHONE = :phone_t`,
+            { phone_t: phone  }
+        );
+    
+        console.log("Kết quả truy vấn:", result.rows);
+
+        // Process the result
+        // Lưu ý, không bao giờ table này trống, 
+        // vì Examination sẽ luôn được insert khi có record mới được thêm vào
+        if(result.rows.length > 0) { //Có data
+            const detailData = result.rows; //
+    
+            await connection.close();
+        
+            // Render the EJS template with the retrieved data
+            res.render('payment_record_OP', { data : detailData });
+        }
+        else {  
+            console.error('HOW THIS CAN BE HAPPEND?', error);
+        }
+    } catch (error) {
+        console.error('Error fetching detailed information:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/patient/:phone/paymentRecordIP', async (req, res) => {
+    // const phone = req.params.phone;
+    // console.log('Patient Phone number:', phone);
+    // let connection;
+
+    // try {
+    //     connection = await oracledb.getConnection(dbConfig);
+    
+    //     let result = await connection.execute(
+    //         `  SELECT DISTINCT
+    //         E.OP_PHONE, 
+    //         E.MED_ID, 
+    //         M.NAME, 
+    //         M.EXPR_DATE,
+    //         X.FEE,
+    //         M.SELL_PRICE,
+    //         P.PROV_ID
+    //     FROM 
+    //         EXAM_MED E
+    //     JOIN 
+    //         EXAMINATION X ON E.OP_PHONE = X.OP_PHONE AND E.RECORD_ID = X.RECORD_ID
+    //     JOIN 
+    //         MEDICATION M ON E.MED_ID = M.MED_ID
+    //     JOIN 
+    //         PROVIDED P ON M.MED_ID = P.MED_ID
+    //     WHERE 
+    //         E.OP_PHONE = :phone_t
+    //      `,
+    //         { phone_t: phone }  
+    //     );
+
+    //     console.log("Kết quả truy vấn:", result.rows);
+    //     if (result.rows.length > 0) {
+    //         res.json({ data: result.rows });
+    //     } 
+    //     //else {     }
+    // } catch (err) {
+    //     console.error(err);
+    //     res.status(500).send({ error: err.message });
+    // } finally {
+    //     if (connection) {
+    //         try {
+    //             await connection.close();
+    //         } catch (err) {
+    //             console.error(err);
+    //         }
+    //     }
+    // }
+    const phone = req.params.phone;
+     
+    console.log('Patient Phone number:', phone);
+    try {
+        // Retrieve parameters from the request
+            
+        let connection = await oracledb.getConnection(dbConfig);
+    
+        let result = await connection.execute(
+            `  SELECT DISTINCT
+                   E.IP_PHONE, 
+                     E.MED_ID, 
+                     M.NAME, 
+                     M.EXPR_DATE,
+                     X.FEE,
+                     M.SELL_PRICE,
+                     P.PROV_ID
+                 FROM 
+                     TREAT_MED E
+                 JOIN 
+                     TREATMENT X ON E.IP_PHONE = X.IP_PHONE AND E.RECORD_ID = X.RECORD_ID
+                 JOIN 
+                     MEDICATION M ON E.MED_ID = M.MED_ID
+                 JOIN 
+                     PROVIDED P ON M.MED_ID = P.MED_ID
+                 WHERE 
+                     E.IP_PHONE = :phone_t`,
+            { phone_t: phone  }
+        );
+    
+        console.log("Kết quả truy vấn:", result.rows);
+
+        // Process the result
+        // Lưu ý, không bao giờ table này trống, 
+        // vì Examination sẽ luôn được insert khi có record mới được thêm vào
+        if(result.rows.length > 0) { //Có data
+            const detailData = result.rows; //
+    
+            await connection.close();
+        
+            // Render the EJS template with the retrieved data
+            res.render('payment_record_OP', { data : detailData });
+        }
+        else {  
+            console.error('HOW THIS CAN BE HAPPEND?', error);
+        }
+    } catch (error) {
+        console.error('Error fetching detailed information:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });

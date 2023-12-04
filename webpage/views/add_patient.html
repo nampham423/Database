@@ -117,9 +117,14 @@
                 },
                 body: jsonToSend
             })
-            .then(response => response.json())
+            .then(response =>{ response.json();
+                alert('Adding Patient Unsuccessfully !!');
+            })
             .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
         }
 
         document.getElementById('addPatientForm').onsubmit = function(event) {
