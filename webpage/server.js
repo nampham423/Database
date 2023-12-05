@@ -36,6 +36,20 @@ app.listen(port, () => {
 app.post('/login', async (req, res) => {
     let connection;
     const loginid = req.body;
+
+    var regexUsername = new RegExp("^[a-zA-Z0-9_]+$");
+    if (!regexUsername.test(loginid.username)) {
+        res.json({ found: false });
+        return;
+    }
+
+    var regexPassword = new RegExp("^[a-zA-Z0-9_!@#$%^&]+$");
+    if (!regexPassword.test(loginid.password)) {
+        res.json({ found: false });
+        return;
+    }
+
+
     try {
         connection = await oracledb.getConnection(dbConfig);
         console.log(loginid.username, loginid.password);
