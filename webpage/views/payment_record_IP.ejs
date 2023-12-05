@@ -41,7 +41,8 @@
         <th>expr_day</th>
         <th>fee</th>
         <th>sell_price</th>
-        <th>Provider_id</th>
+        <th>record_id</th>
+        <th>period_number</th>
         
       </tr>
     </thead>
@@ -67,7 +68,7 @@
   <script>
     function fetchData() {
       $.ajax({
-        url: `http://localhost:3000/patient/<%= data %>/paymentRecordIP`, //bind cứng
+        url: `http://localhost:3000/patient/<%= data[i][0]%>/<%= data[i][6]%>/<%= data[i][7]%>/paymentRecordIP`, //bind cứng
         method: 'GET',
         success: function(response) {
           // Assuming data is an array of objects with properties A, B, C
@@ -96,6 +97,7 @@
         var cell5 = newRow.insertCell(4);
         var cell6 = newRow.insertCell(5);
         var cell7 = newRow.insertCell(6);
+        var cell8 = newRow.insertCell(7);
 
         console.log(item)
 
@@ -106,6 +108,8 @@
         cell5.innerHTML = item[4];
         cell5.innerHTML = item[5]; // exam_date
         cell6.innerHTML = item[6];
+        cell6.innerHTML = item[7];
+        
 
  
       });
