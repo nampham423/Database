@@ -80,8 +80,8 @@
                 <h1>Login</h1>
             </div>
             <form id="loginForm">
-                <input type="text" id="username" placeholder="Username" required>
-                <input type="password" id="password" placeholder="Password" required>
+                <input type="text" id="username" placeholder="Username" pattern="^[a-zA-Z0-9_]+$" title="Only fill in numbers, alphabetical characters and underscore" required>
+                <input type="password" id="password" placeholder="Password" pattern="^[a-zA-Z0-9_!@#$%^&]+$" title="Only fill in numbers, alphabetical characters and _!@#$%^&" required>
                 <button type="submit" class="login-button">Login</button>
             </form>
         </div>
