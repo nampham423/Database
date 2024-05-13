@@ -1,1 +1,1 @@
-Hoópital's database
+Hospital's database
